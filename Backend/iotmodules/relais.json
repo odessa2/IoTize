@@ -1,0 +1,43 @@
+{
+  "name": "Relais",
+  "description": "an electrically operated switch",
+  "type": "processing",
+  "hardware": true,
+  "pins": "D1",
+  "dependency": "null",
+  "parameter": {
+    "parameter": [
+      {"name":"mode", "description":{"en": "Mode \"0\": ON while CompareValue < triggervalue  Mode \"1\": ON while CompareValue > triggervalue"}},
+      {"name":"triggervalue", "description":{"en": "Threshold for switching the relay on/off"}},
+      {"name":"hysteresis", "description":{"en": "TBD - Not implemented"}}
+      
+    ],
+    "dynamicParameter": {
+      "multipleValues": 0,
+      "placeholder": "GENERATEDSTRINGS",
+      "parameterList": [
+        {
+          "type" : "label",
+          "name": "CompareValue",
+          "description": {"en":"Which Value should be compared to the triggervalue?"},
+          "placeholder":"null"
+        },
+        {
+          "type": "value",
+          "placeholder": "$VAL"
+        }
+      ],
+      "template": "switchRelais(toFloat($VAL));\n\t"
+    }
+  },
+  "values": [
+   {"name":"state", "description":{"en": "BESCHREIBUNG state"}}
+  ],
+  "sourceskel": {
+    "includes": "null",
+    "declarations": "const int relais = D1;\nconst int mode = $mode;\nString trigger = \"$triggervalue\";\nint state = 0;\n\n",
+    "functions": "float toFloat(String s){\n\treturn s.toFloat();\n}\nvoid switchRelais(float compareValue){\nif(mode==0){\n\tif(compareValue>toFloat(trigger)){\n\tdigitalWrite(relais,HIGH);\n\tstate=1;\n\t}else{\n\t\tdigitalWrite(relais,LOW);\n\t\tstate=0;\n\t}\n}\nif(mode==1){\n\tif(compareValue<toFloat(trigger)){\n\t\tdigitalWrite(relais,HIGH);\n\t\tstate=1;\n\t\t}else{\n\t\t\tdigitalWrite(relais,LOW);\n\t\t\tstate=0;\n\t\t}\n\t}\n}",
+    "setup": "pinMode(relais,OUTPUT);",
+    "loop": "\t$GENERATEDSTRINGS\n\t"
+  }
+}

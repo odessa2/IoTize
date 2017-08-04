@@ -1,0 +1,35 @@
+{
+  "name": "MicroOLED",
+  "description": "code for sending displaying Data on OLED Screen",
+  "type": "processing",
+  "hardware": true,
+  "pins": "i2c",
+  "dependency": "null",
+  "parameter": {
+    "dynamicParameter": {
+      "multipleValues": 1,
+      "placeholder": "GENERATEDSTRINGS",
+      "parameterList": [
+     {
+          "type" : "text",
+          "name": "CustomText",
+          "description": {"en":"Label shown on OLED Display"},
+          "placeholder": "$CUSTOMTEXT"
+        },
+        {
+          "type": "value",
+          "placeholder": "$VAL"
+        }
+      ],
+      "template": "oled.setFontType(0);  oled.println( \"$CUSTOMTEXT: \");  oled.setFontType(0);   oled.println($VAL);\n\t"
+    }
+  },
+  "values": "null",
+  "sourceskel": {
+    "includes": "#include <Wire.h>  // Include Wire if you're using I2C  \n#include <SFE_MicroOLED.h>  // Include the SFE_MicroOLED library\n",
+    "declarations": "#define PIN_RESET 255  \n#define DC_JUMPER 0  // I2C Addres: 0 - 0x3C, 1 - 0x3D  \nMicroOLED oled(PIN_RESET, DC_JUMPER); // Example I2C declaration\n\n",
+    "functions": "null",
+    "setup": "\toled.begin();  oled.clear(ALL);  oled.display();\n\n",
+    "loop": "\toled.clear(PAGE); \n\toled.setCursor(0, 0);  \n\t$GENERATEDSTRINGS \n\toled.display(); \n\tdelay(1000);\n"
+  }
+}

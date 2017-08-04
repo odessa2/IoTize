@@ -1,0 +1,44 @@
+{
+  "name": "Thingspeak",
+  "description": "code for sending data to thingspeak",
+  "type": "service",
+  "hardware": false,
+  "dependency": "wificlient",
+  "parameter": {
+    "parameter": [
+      {"name":"thingspeakKey", "description":{"en": "Your Thingspeak API Key"}},
+      {"name":"thingspeak_interval", "description":{"en": "Repetition intervall in Seconds"}}
+
+    ],
+    "dynamicParameter": {
+      "multipleValues": 1,
+      "placeholder": "GENERATEDSTRINGS",
+      "parameterList": [
+      
+         {
+         "type" : "generated",
+          "prefix": "field",
+      	  "name": "NULL",
+	      "description": {"en":"Fieldname as shown in Thingspeak Dashboard"},
+
+          "placeholder": "$FIELD"
+        },
+        {
+          "type": "value",
+          "placeholder": "$VAL"
+        }
+
+
+      ],
+      "template": "thingspeakdata += \"&$FIELD=\";thingspeakdata += String($VAL);\n\t"
+    }
+  },
+  "values": "null",
+  "sourceskel": {
+    "includes": "#include <Ticker.h>",
+    "declarations": "const char* host = \"api.thingspeak.com\";\nconst char* thingspeak_key = \"$thingspeakKey\";Ticker thingiverseTicker;\nboolean thingiverseTrigger = true;\nconst int thingiverseTimerIntervall = $thingspeak_interval;",
+    "functions": "void triggerThingiverse(){\n\tthingiverseTrigger=true;\n}\nvoid submitToThingspeak(String data){\n\tWiFiClient client;\n\tconst int httpPort = 80;\n\tif (!client.connect(host, httpPort)) {  return;   }\n\tString url = \"/update?api_key=\";\n\turl += String(thingspeak_key);\n\turl += data;\n\t\n\tclient.print(String(\"GET \") + url + \" HTTP/1.1\\r\\n\" + \"Host: \" + host + \"\\r\\n\" +  \"Connection: close\\r\\n\\r\\n\");delay(10);\n\tunsigned long timeout = millis(); while (client.available() == 0) { \n\tif (millis() - timeout > 5000) \n\t{\n\tclient.stop();\n\treturn; \n\t}\n\t }\n\t}\n",
+    "setup": "  thingiverseTicker.attach(thingiverseTimerIntervall, triggerThingiverse);",
+    "loop": "\tif (thingiverseTrigger){\n\t\tString thingspeakdata;\n\t$GENERATEDSTRINGS submitToThingspeak(thingspeakdata);\n\t\tthingiverseTrigger=false;\n}\n"
+  }
+}

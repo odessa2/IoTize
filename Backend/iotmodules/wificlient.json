@@ -1,0 +1,26 @@
+{
+  "name": "WiFiClientSimple",
+  "description": "code for establishing wifi connection",
+  "implements": "wificlient",
+  "hardware": false,
+  "type": "software",
+  "dependency": "null",
+  "parameter": {
+    "parameter": [
+      {"name":"ssid", "description":{"en": "Name of your WiFi Network"}},
+      {"name":"password", "description":{"en": "Password of your WiFi Network"}},
+      {"name":"wificlienthostname", "description":{"en": "Hostname for your IoT Device"}}
+    ]
+  },
+  "values": [
+    {"name":"ipAdress", "description":{"en": "IP Adress of your IoT Device"}}
+
+  ],
+  "sourceskel": {
+    "includes": "#include <ESP8266WiFi.h>\n",
+    "declarations": "String ipAdress;\nconst char* ssid   = \"$ssid\";\nconst char* password = \"$password\";\nconst char* wificlienthostname   = \"$wificlienthostname\";\n\n",
+    "functions": "null",
+    "setup": "\tdelay(10);WiFi.hostname(wificlienthostname);WiFi.begin(ssid, password);\n\twhile (WiFi.status() != WL_CONNECTED) {delay(500);}\n\tipAdress=WiFi.localIP().toString();\n\n",
+    "loop": "null"
+  }
+}

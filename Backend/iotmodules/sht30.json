@@ -1,0 +1,20 @@
+{
+	"name": "sht30",
+	"description": "temperature and humidity sensor",
+	"type":"sensor",
+	"hardware":true,
+	"pins":"i2c",
+	"dependency": "null",
+	"parameter": "null",
+	"values" : [
+	  {"name":"shttemperature", "description":{"en": "Temperature reported by SHT30 Sensor"}},
+      {"name":"shthumidity", "description":{"en": "Humidity reported by SHT30 Sensor"}}
+	],
+	"sourceskel":  {
+	"includes":"#include \"WEMOS_SHT3X.h\"\n"  , 
+	"declarations":"SHT3X sht30(0x45);\nString shttemperature;\nString shthumidity;\n\n" ,
+	"functions":"null",
+	"setup" :"null", 
+	"loop":"\tsht30.get();\n\tshttemperature = sht30.cTemp;\n\tshthumidity = sht30.humidity;\n\tdelay(1000);\n\n"
+	}
+}
