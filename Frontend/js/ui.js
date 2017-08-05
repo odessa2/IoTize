@@ -62,7 +62,7 @@ $(document).ready(function() {
         for (i = 0; i < nofHW; i++) {
             if ($('#s1cb' + i).is(":checked"))
                 selectedModules.push($('#hw' + i).html())
-               
+
 
         }
         console.log(selectedModules.length);
@@ -102,8 +102,8 @@ $(document).ready(function() {
                 } else {
                     $("#s1warning").css("display", "block");
                     if (checkConstraints() == false)
-                        $("#s1warning").html("<strong>Warnung!</strong> - Constraint Error - i2c: D1,D2 - SPI: D4,D5,D6,D7");
-                   
+                        $("#s1warning").html("<strong>Warnung!</strong> - Constraint Error - Some pins are used multiple Times, which is only allowed in i2c (D1,D2) and SPI (D4,D5,D6,D7)");
+
 
                 }
 
@@ -161,7 +161,7 @@ $(document).ready(function() {
                                 }
                             }
                             formItems += staticparamsSection;
-                            
+
                             var dynparamSection = "";
                             var optionsTemplate = "<option>$OPTIONNAME</option>";
 
@@ -169,7 +169,7 @@ $(document).ready(function() {
 
 
                                 //type: input or label
-                           
+
                                 for (var j = 0; j < data[i].dynamicParameter.length; j++) {
                                     var options = optionsTemplate.replace("$OPTIONNAME", "null");
                                     if (data[i].dynamicParameter[j].type == "label") {
@@ -203,13 +203,13 @@ $(document).ready(function() {
                                 formItems += dynparamSection;
 
                             } // data lengh
-                           
+
 
                             $("#confDiv").append(htmltemplate.replace("$FORM", formtemplate.replace("$FORMITEMS", formItems)));
 
                         }
 
-                      
+
                     });
 
 
@@ -218,7 +218,7 @@ $(document).ready(function() {
                     $("#s2warning").css("display", "block");
                     if (checkConstraints() == false)
                         $("#s2warning").html("<strong>Constraint Error!</strong> " + data);
-                  
+
                 }
             });
 
@@ -272,7 +272,7 @@ $(document).ready(function() {
 
         }
 
-      
+
         console.log(JSON.stringify(confReply));
         $.post("/stage3/submitConfig", {
                 conf: confReply
@@ -315,7 +315,7 @@ $(document).ready(function() {
                     $("#s3warning").css("display", "block");
                     if (checkConstraints() == false)
                         $("#s3warning").html("<strong>Error!</strong> - Constraint Error ");
-               
+
 
                 }
 
@@ -346,11 +346,9 @@ $(document).ready(function() {
                 },
                 function(data, status) {
                     if (data.EXITCODE == 0) {
-                        //  alert("SUCCESS");
+                  
                         $("#s4info").css("display", "none");
-
                         $("#s4success").css("display", "block");
-
                         $("#s4success").html("<strong>Build and Flash successful!</strong>");
                         setProgress(100);
 
@@ -444,7 +442,7 @@ $(document).ready(function() {
                         $("#usbSelectorDiv").html(usbhtml);
 
                     });
-              
+
             }
 
             // Die Datei einlesen und in eine Data-URL konvertieren
@@ -454,8 +452,6 @@ $(document).ready(function() {
         });
 
     $("#usbrefresh").click(function() {
-
-
         $.get("/stage4/getUSBDevices", function(data) {
             console.log(data);
             $("#s4fail").css("display", "none");
@@ -465,18 +461,39 @@ $(document).ready(function() {
             for (var i = 0; i < data.usbports.length; i++) {
                 console.log(data.usbports[i]);
                 usbhtml += "<option>" + data.usbports[i].comName + "|" + data.usbports[i].pnpId + "</option>";
-
-
             }
             usbhtml += "</select>";
             $("#usbSelectorDiv").html(usbhtml);
-
-
-
         });
 
     });
 
+    $("#codeEdit").on('input', function() {
+        $('#codeEdit').attr('rows', $("#codeEdit").val().split("\n").length);
+
+    });
+
+    $("#editCodeBtn").click(function() {
+
+        $("#codeViewDiv").css("display", "none");
+        $("#editRow").css("display", "none");
+        $("#codeEditDiv").css("display", "block");
+        $("#codeEdit").val($("#generatedCode").text());
+        $('#codeEdit').attr('rows', $("#codeEdit").val().split("\n").length);
+        });
+
+    $("#saveCodeBtn").click(function() {
+        $("#generatedCode").text($("#codeEdit").val());
+        $("#codeEditDiv").css("display", "none");
+        $("#codeViewDiv").css("display", "block");
+        $("#editRow").css("display", "block");
+    });
+
+    $("#discardCodeBtn").click(function() {
+        $("#codeEditDiv").css("display", "none");
+        $("#codeViewDiv").css("display", "block");
+        $("#editRow").css("display", "block");
+    });
 
 
 });

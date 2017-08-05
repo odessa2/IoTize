@@ -8,6 +8,9 @@ The goal of my thesis is to bring the Internet of Things - accompanied by the co
 
 In the proposed solution, a configuration tool, can be used - in combination with the microcontroller and so called "shields" (periphery) - to bring modular and connected sensors online, without any programming skills. The tool generates the necessary code, compiles it, and then flashes the binary to the microcontroller.
 
+## Note
+This preview Version requires Arduino IDE with esp8266 plugin in path.  Requiered 3rd Party Libraries are packaged as  
+> prev_libs.tar.gz
 
 ## Backend
 
@@ -37,9 +40,10 @@ In the proposed solution, a configuration tool, can be used - in combination wit
 - MQTT
 - HTTP
 - WiFi Multi
+- MicroSD Logging
 
 ### Misc
-- s
+- improve formatting of generated code
 
 
 

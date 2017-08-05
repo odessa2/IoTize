@@ -624,12 +624,10 @@ app.get('/exportjson', function(req, res) {
   data.configuration=userconf;
   data.hardwareModules=new Array;
   data.softwareModules=new Array;
-
    for (var hw = 0; hw < hwsel.length; hw++) 
    		data.hardwareModules.push(hwsel[hw].name)
    for (var sw = 0; sw < swsel.length; sw++) 
    		data.softwareModules.push(swsel[sw].name)
-
    	console.log(JSON.stringify(data));
    	res.send(data);
 });

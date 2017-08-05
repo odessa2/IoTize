@@ -116,20 +116,39 @@
   <h1>Step 4:
   Validate, Build and Flash</h1>
   <p>Bitte warten Sie, bis der Quellcode generiert und Compiliert wurde. Nach erfolgreichem Build erhalten Sie die Möglichkeit, den USB Port auszuwählen, über den das esp8266 Board bespielt werden soll.</p>
-                        <pre><code class="hljs cpp" id="generatedCode">&lt;p&gt;Error...&lt;/p&gt;
+                      
+  <div id="codeViewDiv"  style="display:block;">
+  <pre> <code class="hljs cpp" id="generatedCode">&lt;p&gt;Error...&lt;/p&gt;
         &lt;p&gt;please start over...&lt;/p&gt;
-  </code></pre>
+  </code></pre> </div>
+  <div id="codeEditDiv"  style="display:none;">
+  <textarea id="codeEdit" rows="40" cols="90">
+  </textarea> </br>
+          <a  id="saveCodeBtn" class="btn btn-default" href="#" role="button">Save Code</a>
+          <a  id="discardCodeBtn" class="btn btn-default" href="#" role="button">Discard Changes</a>
+    
+  </div>
+  
+
   <p>
+  <div id="editRow" class="row">
+        <div class="col-md-4">  
+          <a  id="editCodeBtn" class="btn btn-default" href="#" role="button">Edit Code</a>
+       </div>
+
+  </div></br>
     <div class="row">
       <div id="usbSelectorDiv" class="col-md-8"></div>
+
       <div class="col-md-4"> <button type="button" id="usbrefresh" class="btn btn-default btn-sm">  <span class="glyphicon glyphicon-refresh"></span> Refresh USB Ports </button></div>
     </div>
+
     </br>
     <div class="row">
-      <div class="col-md-4"><a id="stepbtn4" class="btn btn-primary btn-lg" href="#step4" role="button">Los gehts &raquo;
+      <div class="col-md-4"><a id="stepbtn4" class="btn btn-primary btn-lg" href="#step4" role="button">Go! &raquo;
       </a></div>
       <div class="col-md-4">
-        
+      
         
       </div>
       <div class="col-md-4">
