@@ -1,0 +1,78 @@
+{
+    "name": "Twilio",
+    "description": "code for conditional notification SMS via Twilio",
+    "type": "service",
+    "hardware": false,
+    "dependency": "wificlient",
+    "parameter": {
+        "parameter": [
+
+            {
+                "name": "twilioAccountSID",
+                "description": {
+                    "en": "Your Twilio Account SID"
+                }
+            }, {
+                "name": "twilioAuthtoken",
+                "description": {
+                    "en": "Your Twilio Auth Token"
+                }
+            }, {
+                "name": "twilioPhoneFROM",
+                "description": {
+                    "en": "FROM Phone Number (eg +49999888666)"
+                }
+            }, {
+                "name": "twilioPhoneTO",
+                "description": {
+                    "en": "Receiver Phone Number (eg +4917612300123)"
+                }
+            }, {
+                "name": "twilioMessage",
+                "description": {
+                    "en": "SMS Text. Placeholder: CVALUE"
+                }
+            }, {
+                "name": "twilioMode",
+                "description": {
+                    "en": "Mode \"0\": Send Notification if CompareValue < triggervalue  Mode \"1\": Send Notification if CompareValue > triggervalue"
+                }
+            }, {
+                "name": "twilioTriggervalue",
+                "description": {
+                    "en": "Threshold for sending notification"
+                }
+            }, {
+                "name": "twilioCheckIntervall",
+                "description": {
+                    "en": "Check intervall in Seconds"
+                }
+            }
+        ],
+        "dynamicParameter": {
+            "multipleValues": 0,
+            "placeholder": "GENERATEDSTRINGS",
+            "parameterList": [{
+                "type": "label",
+                "name": "CompareValue",
+                "description": {
+                    "en": "Which Value should be compared to the triggervalue?"
+                },
+                "placeholder": "null"
+            }, {
+                "type": "value",
+                "placeholder": "$VAL"
+            }],
+            "template": "checkNotification($VAL);\n\t\t"
+        }
+    },
+    "values": "null",
+    "sourceskel": {
+        "includes": "#include <Ticker.h>\n#include <WiFiClientSecure.h>",
+        "declarations": "Ticker twilioTicker;\nboolean twilioTrigger = true;\nconst int twilioTimerIntervall = $twilioCheckIntervall;\nconst int twilioMode = $twilioMode;\nString twilioTriggervalue = \"$twilioTriggervalue\";\nchar  twiliobuff[160];\nconst char* twilioHost = \"api.twilio.com\";\nconst int httpsPort = 443;\nconst char*  twilioAccountSID = \"$twilioAccountSID\";\nconst char* twilioAuthtoken = \"$twilioAuthtoken\";\nconst char* twilioMessage = \"$twilioMessage\";\nString twilioFrom =  \"$twilioPhoneFROM\";String twilioTo =  \"$twilioPhoneTO\";\n\n",
+        "functions": "void triggerTwilio() {\n\ttwilioTrigger = true;\n}\n\nint urlencode(char *dest, const char *src) {\n\t/* urlencode all non-alphanumeric characters in the C-string 'src'\n\tstore result in the C-string 'dest'\n\treturn the length of the url encoded C-string\n\t*/\n\tchar *d;\n\tint i;\n\tfor (i = 0, d = dest; src[i]; i++) {\n\t\tif (isalnum(src[i])) *(d++) = src[i];\n\t\telse {\n\t\t\tsprintf(d, \"%%%02X\", src[i]);\n\t\t\td += 3;\n\t\t}\n\t\t}\n\t*d = 0;\n\treturn d - dest;\n}\nvoid checkNotification(String compareValue) {\n\tif (twilioMode == 0) \n\t\tif (compareValue.toFloat() < twilioTriggervalue.toFloat()) \n\t\t\tsendTwilioNotification(compareValue);\n\tif (twilioMode == 1) \n\t\tif (compareValue.toFloat() > twilioTriggervalue.toFloat()) \n\t\t\tsendTwilioNotification(compareValue);\n}\nvoid sendTwilioNotification(String value) {\n\tString url = \"/2010-04-01/Accounts/\"+  String(twilioAccountSID) +  \"/Messages.json\";Serial.print(\"requesting URL: \");Serial.println(url);\n\ttwilioFrom.replace(\"+\",\"%2B\");\n\ttwilioTo.replace(\"+\",\"%2B\");\n\tString msg = twilioMessage;\n\tmsg.replace(\"CVALUE\", value);\n\turlencode(twiliobuff,msg.c_str());Serial.print(\"Message : \");Serial.println(twiliobuff);String data = \"username=\" + String(twilioAccountSID) + \"&password=\" + String(twilioAuthtoken) + \"&From=\" + String(twilioFrom) + \"&To=\" + String(twilioTo) + \"&Body=\" + String(twiliobuff) ;\n // Use WiFiClientSecure class to create TLS connection\nWiFiClientSecure client;Serial.print(\"connecting to \");Serial.println(twilioHost);if (!client.connect(twilioHost, httpsPort)) {  Serial.println(\"connection failed\");  return;}\n\tclient.println(\"POST \" + url + \" HTTP/1.1\");client.println(\"Host: \" + (String)twilioHost);client.println(\"User-Agent: ESP8266/1.0\");client.println(\"Connection: close\");client.println(\"Authorization: Basic QUM0NzJlZDRlOWI5MTFkMzFhNzc2YTkyZjg0YzE4MmE1YToyZTZmNjhhNjQ2NGI1MzFkMTlhMWNkZDlkYzZmOTg4ZA==\");client.println(\"Content-Type: application/x-www-form-urlencoded;\");client.print(\"Content-Length: \");client.println(data.length());client.println();client.println(data);delay(10);String response = client.readString();int bodypos = response.indexOf(\"\\r\\n\\r\\n\") + 4;Serial.println(\"request sent\");Serial.println(\"reply was:\");Serial.println(\"==========\");Serial.println(response.substring(bodypos));Serial.println(\"==========\");Serial.println(\"closing connection\");}\n",
+        "setup": "\tSerial.begin(9600);\n\ttwilioTicker.attach(twilioTimerIntervall, triggerTwilio);\n",
+        "loop": "\tif (twilioTrigger){\n\t\t$GENERATEDSTRINGS twilioTrigger=false;\n\t}\n"
+
+    }
+}

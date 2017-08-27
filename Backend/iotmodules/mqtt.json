@@ -1,0 +1,61 @@
+{
+    "name": "MQTTPublisher",
+    "description": "code for publishing Data to a specified MQTT Topic",
+    "type": "service",
+    "hardware": false,
+    "dependency": "wificlient",
+    "parameter": {
+        "parameter": [
+
+            {
+                "name": "mqtt_server",
+                "description": {
+                    "en": "Hostname or IP of your MQTT Broker"
+                }
+            },
+
+               {
+                "name": "mqtt_port",
+                "description": {
+                    "en": "Port of your MQTT Broker (default: 1883)"
+                }
+            },      {
+                "name": "mqtt_node_name",
+                "description": {
+                    "en": "Unique Name for your ESP Device"
+                }
+            },
+                {"name":"mqtt_interval", "description":{"en": "Repetition intervall in Seconds"}}
+
+           
+        ],
+        "dynamicParameter": {
+            "multipleValues": 1,
+            "placeholder": "GENERATEDSTRINGS",
+            "parameterList": [
+        {
+          "type" : "text",
+          "name": "MQTTTopic",
+          "description": {"en":"MQTT Publish Topic"},
+          "placeholder": "$MQTTTOPIC"
+        },
+        {
+          "type": "value",
+          "placeholder": "$VAL"
+        }
+
+            ],
+            "template": "publishValue(\"$MQTTTOPIC\",$VAL);\n\t\tdelay(100);\n\t\t"
+        }
+    },
+    "values": "null",
+    "sourceskel": {
+        "includes": "#include <PubSubClient.h>\n#include <Ticker.h>",
+        "declarations": "PubSubClient mqttclient(client);\n\nconst char* mqtt_server = \"$mqtt_server\";\nconst int mqtt_interval = $mqtt_interval;\nconst int mqtt_port = $mqtt_port;\nconst char * mqtt_node_name = \"$mqtt_node_name\";\n\nTicker mqttTicker;\nboolean mqttTrigger = true;\n",
+
+        "functions": "\nvoid triggerMqtt() {\n\tmqttTrigger = true;\n}\n\n\n\nvoid reconnect() {\n\t// Loop until we're reconnected\n\twhile (!mqttclient.connected()) {\n\t\tSerial.print(\"Attempting MQTT connection...\");\n\t\t// Attempt to connect\n\t\tif (mqttclient.connect(mqtt_node_name)) {\n\t\t\tSerial.println(\"connected\");\n\t\t\t// Once connected, publish an announcement...\n\t\t\tmqttclient.publish(\"outTopic\", \"hello world\");\n\n\t\t} else {\n\t\t\tSerial.print(\"failed, rc=\");\n\t\t\tSerial.print(mqttclient.state());\n\t\t\tSerial.println(\" try again in 5 seconds\");\n\t\t\t// Wait 5 seconds before retrying\n\t\t\tdelay(5000);\n\t\t}\n\t}\n}\n\nvoid publishValue(String topic, String value){\n\t\n\tSerial.println(\"Publish Topic: \" + String(topic));\n\tSerial.println(\"Publish Value: \" + String(value));\n\t\t\t\tmqttclient.publish(topic.c_str(),value.c_str());\n\n \n\t}",
+        "setup": "\tmqttclient.setServer(mqtt_server,  mqtt_port);\n\tmqttTicker.attach(mqtt_interval, triggerMqtt)\n;",
+        "loop": "\tif (!mqttclient.connected()) {\n\treconnect();\n\t}\n\tmqttclient.loop();\tif (mqttTrigger){\n\t\t$GENERATEDSTRINGS mqttTrigger=false;\n\t}\n"
+
+    }
+}

@@ -18,7 +18,7 @@
   ],
   "sourceskel": {
     "includes": "#include <ESP8266WiFi.h>\n",
-    "declarations": "String ipAdress;\nconst char* ssid   = \"$ssid\";\nconst char* password = \"$password\";\nconst char* wificlienthostname   = \"$wificlienthostname\";\n\n",
+    "declarations": "WiFiClient client;String ipAdress;\nconst char* ssid   = \"$ssid\";\nconst char* password = \"$password\";\nconst char* wificlienthostname   = \"$wificlienthostname\";\n\n",
     "functions": "null",
     "setup": "\tdelay(10);WiFi.hostname(wificlienthostname);WiFi.begin(ssid, password);\n\twhile (WiFi.status() != WL_CONNECTED) {delay(500);}\n\tipAdress=WiFi.localIP().toString();\n\n",
     "loop": "null"
