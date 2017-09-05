@@ -5,6 +5,7 @@
   "hardware": true,
   "pins": "i2c",
   "dependency": "null",
+  "librarys" : ["SparkFun Micro OLED Breakout"],
   "parameter": {
     "dynamicParameter": {
       "multipleValues": 1,

@@ -4,6 +4,7 @@
     "type": "service",
     "hardware": false,
     "dependency": "wificlient",
+    "librarys" : ["PubSubClient"],
     "parameter": {
         "parameter": [
 

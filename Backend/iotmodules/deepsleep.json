@@ -1,0 +1,26 @@
+{
+	"name": "DeepSleep",
+	"description": "enables Ultra Low Power Hibernation - connect D0 to RST",
+	"type":"misc",
+	"hardware":false,
+	"dependency": "null",
+	"parameter": {
+	 "parameter": [
+            {
+                "name": "deepSleepIntervall",
+                "description": {
+                    "en": "Duration of Sleep in Minutes - overwrites other configured intervalls"
+                } 
+            }
+            ]
+	} ,
+	"values" : "null",
+	"sourceskel":  {
+	"includes": ""  , 
+	"declarations":"#define deepSleepIntervall $deepSleepIntervall \n",
+	"functions":"null",
+	"setup" : "", 
+	"loop": "\tESP.deepSleep(deepSleepIntervall * 60 * 1000000);\n\tdelay(100);\n"
+
+	}
+}

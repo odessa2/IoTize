@@ -17,10 +17,10 @@
 
   ],
   "sourceskel": {
-    "includes": "#include <ESP8266WiFi.h>\n",
-    "declarations": "WiFiClient client;String ipAdress;\nconst char* ssid   = \"$ssid\";\nconst char* password = \"$password\";\nconst char* wificlienthostname   = \"$wificlienthostname\";\n\n",
+    "includes": "#include <ESP8266WiFi.h>\n#include <ESP8266mDNS.h>\n",
+    "declarations": "WiFiClient client;String ipAdress;\nconst char* ssid   = \"$ssid\";\nconst char* password = \"$password\";\nconst char* wificlienthostname = \"$wificlienthostname\";\n\n",
     "functions": "null",
-    "setup": "\tdelay(10);WiFi.hostname(wificlienthostname);WiFi.begin(ssid, password);\n\twhile (WiFi.status() != WL_CONNECTED) {delay(500);}\n\tipAdress=WiFi.localIP().toString();\n\n",
+    "setup": "\tdelay(10);WiFi.hostname(wificlienthostname);WiFi.mode(WIFI_STA);\nWiFi.begin(ssid, password);\n\twhile (WiFi.status() != WL_CONNECTED) {delay(500);}\n\tipAdress=WiFi.localIP().toString();\n\tif (!MDNS.begin(wificlienthostname))\n\tSerial.println(\"Error setting up MDNS responder!\");\n\t",
     "loop": "null"
   }
 }

@@ -5,6 +5,7 @@
   "hardware": false,
   "type": "software",
   "dependency": "null",
+  "librarys" : ["ArduinoJson"],
   "parameter": {
     "parameter": [
         {"name":"wificlienthostname", "description":{"en": "Hostname for your IoT Device"}}

@@ -11,10 +11,10 @@
       {"name":"shthumidity", "description":{"en": "Humidity reported by SHT30 Sensor"}}
 	],
 	"sourceskel":  {
-	"includes":"#include \"WEMOS_SHT3X.h\"\n"  , 
-	"declarations":"SHT3X sht30(0x45);\nString shttemperature;\nString shthumidity;\n\n" ,
+	"includes":"#include <Wire.h>\n"  , 
+	"declarations":"String shttemperature;\nString shthumidity;\n\nuint8_t shtaddress = 0x45;\n\n" ,
 	"functions":"null",
-	"setup" :"null", 
-	"loop":"\tsht30.get();\n\tshttemperature = sht30.cTemp;\n\tshthumidity = sht30.humidity;\n\tdelay(1000);\n\n"
+	"setup" : "\tWire.begin();\n", 
+	"loop": "\tfloat cTemp = 0;\n\tfloat fTemp = 0;\n\tfloat humidity = 0;\n\tunsigned int data[6];\n\n\t// Start I2C Transmission\n\tWire.beginTransmission(shtaddress);\n\t// Send measurement command\n\tWire.write(0x2C);\n\tWire.write(0x06);\n\t// Stop I2C transmission\n\tif (Wire.endTransmission() != 0)\n\t\t\t\t; //currently no error handling\n\tdelay(500);\n\t// Request 6 bytes of data\n\tWire.requestFrom(shtaddress, 6);\n\t// Read 6 bytes of data\n\t// cTemp msb, cTemp lsb, cTemp crc, humidity msb, humidity lsb, humidity crc\n\tfor (int i = 0; i < 6; i++) {\n\t\tdata[i] = Wire.read();\n\t};\n\tdelay(50);\n\tif (Wire.available() != 0)\n\t\t; //currently no error handling\n\t// Convert the data\n\tcTemp = ((((data[0] * 256.0) + data[1]) * 175) / 65535.0) - 45;\n\tfTemp = (cTemp * 1.8) + 32;\n\thumidity = ((((data[3] * 256.0) + data[4]) * 100) / 65535.0);\n\n\tdelay(1000);\n\tshttemperature = cTemp;\n\tshthumidity = humidity;\n"
 	}
 }

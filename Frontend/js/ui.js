@@ -45,7 +45,7 @@ $(document).ready(function() {
 
         //load module data
         $.get("stage0/getHWComponents", function(data) {
-            for (var i = 0; i < data.length; i++) {
+        for (var i = 0; i < data.length; i++) {
                 $("#stage1list").append('<tr><td><input type="checkbox" id="s1cb' + i + '" value=""></td><td id="hw' + i + '"">' + data[i].name.toString() + '</td><td>' + data[i].description.toString() + '</td><td>' + data[i].bus.toString() + '</td></tr>');
 
                 console.log(data[i].name.toString());
@@ -84,7 +84,7 @@ $(document).ready(function() {
                     setProgress(25);
 
 
-                    $.get("stage1/getSWComponents", function(data) {
+                    $.get("/stage1/getSWComponents", function(data) {
                         for (var i = 0; i < data.length; i++) {
 
 
@@ -143,7 +143,7 @@ $(document).ready(function() {
 
                     $("#confDiv").text("");
 
-                    $.get("stage2/getConfigurationOptions", function(data) {
+                    $.get("/stage2/getConfigurationOptions", function(data) {
                         console.log(data);
                         confdata = data;
                         for (var i = 0; i < data.length; i++) {
@@ -232,17 +232,17 @@ $(document).ready(function() {
         var confReply = new Array;
         // retreive inputs
         for (var i = 0; i < confdata.length; i++) {
-            var moduleConf = new Object;
-            moduleConf.moduleName = confdata[i].name;
-            moduleConf.staticParameter = new Object;
-
+            var moduleConf = {
+            moduleName : confdata[i].name,
+            staticParameter : new Object,
+            dynamicParameter : new Object
+            };
 
             if ("staticParameter" in confdata[i]) {
                 for (var j = 0; j < confdata[i].staticParameter.length; j++) {
                     moduleConf.staticParameter[confdata[i].staticParameter[j].name] = $("#" + confdata[i].staticParameter[j].name + "InputID").val();
                 }
             }
-            moduleConf.dynamicParameter = new Object;
             if ("dynamicParameter" in confdata[i]) {
 
                 for (var j = 0; j < confdata[i].dynamicParameter.length; j++) {
@@ -289,7 +289,7 @@ $(document).ready(function() {
                     fade("#step3", "#step4");
 
 
-                    $.get("stage3/getSourceCode", function(data) {
+                    $.get("/stage3/getSourceCode", function(data) {
                         console.log(data);
                         $("#generatedCode").text(data.sourceString);
                         for (var i = 0; i < data.length; i++) {
@@ -329,9 +329,10 @@ $(document).ready(function() {
 
     $("#stepbtn4").click(function() {
 
-        var data = new Object;
-        data.code = $("#generatedCode").text();
-        data.usbport = $('#usbSelectorDiv option:selected').text().split("|")[0];
+        var data = {
+        code : $("#generatedCode").text(),
+        usbport : $('#usbSelectorDiv option:selected').text().split("|")[0]
+        }
         if (data.usbport.length == 0) {
             $("#s4fail").css("display", "block");
             $("#s4fail").html("<strong>NO USBPORT FOUND</strong>");
@@ -405,12 +406,16 @@ $(document).ready(function() {
                 // Ein Objekt um Dateien einzulesen
             var reader = new FileReader();
 
-            var senddata = new Object();
+            var senddata = {
+            name : file.name,
+            date : file.lastModified,
+            size : file.size,
+            type : file.type
+
+            }
+          
             // Auslesen der Datei-Metadaten
-            senddata.name = file.name;
-            senddata.date = file.lastModified;
-            senddata.size = file.size;
-            senddata.type = file.type;
+         
 
             // Wenn der Dateiinhalt ausgelesen wurde...
             reader.onload = function(theFileData) {

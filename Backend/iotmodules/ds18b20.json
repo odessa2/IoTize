@@ -6,6 +6,7 @@
   "pins": "D2",
   "dependency": "null",
   "parameter": "null",
+  "librarys" : ["OneWire"],
   "values": [
   {"name":"DS18B20Temp", "description":{"en": "Temperature reported by DS18b20 Sensor"}}
   ],

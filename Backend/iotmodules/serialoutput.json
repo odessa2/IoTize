@@ -1,0 +1,25 @@
+{
+	"name": "SerialConsole",
+	"description": "enables Serial Output and humidity sensor",
+	"type":"service",
+	"hardware":false,
+	"dependency": "null",
+	"parameter": {
+	 "parameter": [
+            {
+                "name": "baudrate",
+                "description": {
+                    "en": "Baud-Rate for Serial Connection"
+                } 
+            }
+            ]
+	} ,
+	"values" : "null",
+	"sourceskel":  {
+	"includes": ""  , 
+	"declarations":"#define baudrate $baudrate \n",
+	"functions":"null",
+	"setup" : "\tSerial.begin(baudrate);\n", 
+	"loop": ""
+	}
+}

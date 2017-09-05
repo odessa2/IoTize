@@ -13,21 +13,25 @@ var rules = require('./rules.json');
 
 var cmd = 'arduino --board esp8266:esp8266:d1_mini --port $PORT --upload tmp_build_dir/sketch.ino --verbose --pref build.flash_ld=eagle.flash.4m.ld';
 
-var modulespath  = "./iotmodules/";
-var components = new Array;
+var modulespath = "./iotmodules/";
+var components = new Array();
 var hwsel = new Array();
 var swsel = new Array();
 var userconf = new Array();
 
+var externallibs = new Array();
+
 // read modules from folder into components Array
 fs.readdir(modulespath, (err, files) => {
-  files.forEach(file => {
-  	if (file.includes(".json")){
-  	components.push(require(modulespath+file));
-    console.log("Loaded Module: " + file);
-    }
-  });
+    files.forEach(file => {
+        if (file.includes(".json")) {
+            components.push(require(modulespath + file));
+            console.log("Loaded Module: " + file);
+        }
+    });
+    installExternalLibs();
 })
+
 
 
 // helper functions
@@ -117,17 +121,17 @@ function generateConfigurationOptions(listofmodules) {
             confNode.name = listofmodules[i].name;
             console.log(confNode.name);
             if (typeof listofmodules[i].parameter.parameter == "object") {
-             
+
                 confNode.staticParameter = listofmodules[i].parameter.parameter;
 
             }
             if (typeof listofmodules[i].parameter.dynamicParameter == "object") {
-            	 var dynParameter = new Array;
+                var dynParameter = new Array;
                 for (var params = 0; params < listofmodules[i].parameter.dynamicParameter.parameterList.length; params++) {
                     //check if if ('key' in myObj)
                     // type: text, generated, value
                     // 
-                   
+
 
                     if (listofmodules[i].parameter.dynamicParameter.parameterList[params].type == "value") {
                         confNode.dynParamsValues = values;
@@ -135,35 +139,45 @@ function generateConfigurationOptions(listofmodules) {
                         if (listofmodules[i].parameter.dynamicParameter.multipleValues == 0) {
                             dynParameter.push({
                                 "name": listofmodules[i].parameter.dynamicParameter.parameterList[params].name,
-                                "description": listofmodules[i].parameter.dynamicParameter.parameterList[params].description.en, "type":"input"
+                                "description": listofmodules[i].parameter.dynamicParameter.parameterList[params].description.en,
+                                "type": "input"
                             })
                         } else {
-                           // for (var dynparams = 0; dynparams < values.length; dynparams++) { 
-                                console.log(listofmodules[i].parameter.dynamicParameter.parameterList[params].name);
-                                dynParameter.push({"name":listofmodules[i].parameter.dynamicParameter.parameterList[params].name, "description": listofmodules[i].parameter.dynamicParameter.parameterList[params].description.en,"type":"input"});
+                            // for (var dynparams = 0; dynparams < values.length; dynparams++) { 
+                            console.log(listofmodules[i].parameter.dynamicParameter.parameterList[params].name);
+                            dynParameter.push({
+                                "name": listofmodules[i].parameter.dynamicParameter.parameterList[params].name,
+                                "description": listofmodules[i].parameter.dynamicParameter.parameterList[params].description.en,
+                                "type": "input"
+                            });
                             //}
                         }
 
 
-                    } else if(listofmodules[i].parameter.dynamicParameter.parameterList[params].type == "generated"){
-                    	 for (var dynparams = 0; dynparams < values.length; dynparams++) { // for each possible value one field -> static Name with Prefix
-                                console.log(listofmodules[i].parameter.dynamicParameter.parameterList[params].prefix + "" + String(dynparams + 1));
-                                dynParameter.push({"name":listofmodules[i].parameter.dynamicParameter.parameterList[params].prefix + "" + String(dynparams + 1),"type":"label"});
-                                //save
-                            }
+                    } else if (listofmodules[i].parameter.dynamicParameter.parameterList[params].type == "generated") {
+                        for (var dynparams = 0; dynparams < values.length; dynparams++) { // for each possible value one field -> static Name with Prefix
+                            console.log(listofmodules[i].parameter.dynamicParameter.parameterList[params].prefix + "" + String(dynparams + 1));
+                            dynParameter.push({
+                                "name": listofmodules[i].parameter.dynamicParameter.parameterList[params].prefix + "" + String(dynparams + 1),
+                                "type": "label"
+                            });
+                            //save
+                        }
 
+
+                    } else if (listofmodules[i].parameter.dynamicParameter.parameterList[params].type == "label") {
+                        console.log(listofmodules[i].parameter.dynamicParameter.parameterList[params].prefix + "" + String(dynparams + 1));
+                        dynParameter.push({
+                            "name": listofmodules[i].parameter.dynamicParameter.parameterList[params].name,
+                            "type": "label"
+                        });
+                        //save
 
                     }
-                     else if(listofmodules[i].parameter.dynamicParameter.parameterList[params].type == "label"){
-                    	    console.log(listofmodules[i].parameter.dynamicParameter.parameterList[params].prefix + "" + String(dynparams + 1));
-                                dynParameter.push({"name":listofmodules[i].parameter.dynamicParameter.parameterList[params].name ,"type":"label"});
-                                //save
-                            
-                    }
 
-                     confNode.dynamicParameter = dynParameter;
-                     confNode.dynParamMultipleValues = listofmodules[i].parameter.dynamicParameter.multipleValues;
-                     console.log("MultipleVal: " + confNode.dynParamMultipleValues )
+                    confNode.dynamicParameter = dynParameter;
+                    confNode.dynParamMultipleValues = listofmodules[i].parameter.dynamicParameter.multipleValues;
+                    console.log("MultipleVal: " + confNode.dynParamMultipleValues)
 
 
                 }
@@ -179,28 +193,191 @@ function generateConfigurationOptions(listofmodules) {
 
 
 function sortModules(modules) {
-    var sortedModules = new Object;
-    var selectedModules = modules ; 
-    sortedModules.software = new Array;
-    sortedModules.sensor = new Array;
-    sortedModules.service = new Array;
-    sortedModules.processing = new Array;
-
-    for (var i = 0; i < selectedModules.length; i++) {
-        if (selectedModules[i].type == "software") {
-            sortedModules.software.push(selectedModules[i]);
-        } else if (selectedModules[i].type == "sensor") {
-            sortedModules.sensor.push(selectedModules[i]);
-        } else if (selectedModules[i].type == "service") {
-            sortedModules.service.push(selectedModules[i]);
-        } else if (selectedModules[i].type == "processing") {
-            sortedModules.processing.push(selectedModules[i]);
+    var selectedModules = modules;
+    var sortedModules = {
+        software: new Array,
+        sensor: new Array,
+        service: new Array,
+        processing: new Array,
+        misc: new Array
+    }
+ for (var item of  selectedModules) {
+ //   for (var i = 0; i < selectedModules.length; i++) {
+        if (item.type == "software") {
+            sortedModules.software.push(item);
+        } else if (item.type == "sensor") {
+            sortedModules.sensor.push(item);
+        } else if (item.type == "service") {
+            sortedModules.service.push(item);
+        } else if (item.type == "processing") {
+            sortedModules.processing.push(item);
+        } else if (item.type == "misc") {
+            sortedModules.misc.push(item);
         }
     }
 
     return sortedModules;
 }
 
+function generateSourcCode() {
+    var sortedModules = sortModules(hwsel.concat(swsel));
+
+    var sourceString = "";
+
+    // generate includes part by iterating through modules 
+    Object.keys(sortedModules).forEach(function(key) {
+
+        var val = sortedModules[key];
+        for (var item of val) {
+            if (item.sourceskel.includes != "null") {
+                sourceString += item.sourceskel.includes;
+            }
+
+        }
+    });
+    sourceString += "\n";
+
+    // generate declaraions part by iterating through modules 
+    Object.keys(sortedModules).forEach(function(key) {
+
+        var val = sortedModules[key];
+        for (var item of val) {
+
+            if (item.sourceskel.declarations != "null") {
+                //console.log(val[i].name + "VAL NAME");
+                var declarations = item.sourceskel.declarations;
+                //console.log(userconf.length + " USERCONF") ;
+                for (var confitem of userconf) {
+                    if (confitem.moduleName == item.name) {
+                        if (typeof confitem.staticParameter !== 'undefined') {
+
+                            Object.keys(confitem.staticParameter).forEach(function(key) {
+
+                                var kval = confitem.staticParameter[key];
+                                declarations = declarations.replace("$" + key, kval);
+                            });
+                        }
+                    }
+                }
+
+                //  console.log(declarations);
+
+
+
+                sourceString += declarations;
+
+            }
+        }
+    });
+    sourceString += "\n";
+
+    // generate functions part by iterating through modules 
+    Object.keys(sortedModules).forEach(function(key) {
+
+        var val = sortedModules[key];
+        for (var item of val) {
+
+            if (item.sourceskel.functions != "null") {
+                //console.log(val[i].name + "VAL NAME");
+                var functions = item.sourceskel.functions;
+                //console.log(userconf.length + " USERCONF") ;
+
+
+                //  console.log(declarations);
+
+
+
+                sourceString += functions;
+
+            }
+        }
+    });
+    sourceString += "\n";
+
+    // generate setup part by iterating through modules 
+
+    sourceString += "void setup(){\n";
+    Object.keys(sortedModules).forEach(function(key) {
+
+        var val = sortedModules[key];
+        for (var item of val) {
+
+            if (item.sourceskel.setup != "null") {
+
+                //console.log(val[i].name + "VAL NAME");
+                var setup = item.sourceskel.setup;
+                //console.log(userconf.length + " USERCONF") ;
+
+
+                //  console.log(declarations);
+
+
+
+                sourceString += setup;
+
+            }
+        }
+    });
+    sourceString += "\n}\n";
+
+    // generate loop part by iterating through modules 
+    sourceString += "void loop(){\n";
+    Object.keys(sortedModules).forEach(function(key) {
+
+        var val = sortedModules[key];
+        for (var item of val) {
+
+            if (item.sourceskel.loop != "null") {
+                var loop = item.sourceskel.loop;
+                for (var confitem of userconf) {
+                    if (confitem.moduleName == item.name) {
+
+                        var generated = "";
+                        if (typeof item.parameter.dynamicParameter !== 'undefined') {
+                            Object.keys(confitem.dynamicParameter).forEach(function(key) {
+                                var kval = confitem.dynamicParameter[key];
+                                if ((kval != "null") && (kval != "")) {
+                                    // TODO DYNAMIC!! AND FLEXIBLE
+                                    console.log(key + " : : : : " + kval);
+
+                                    generated += item.parameter.dynamicParameter.template.replace(item.parameter.dynamicParameter.parameterList[0].placeholder, key).replace(item.parameter.dynamicParameter.parameterList[1].placeholder, kval);
+                                }
+
+                            });
+                            loop = loop.replace("$" + item.parameter.dynamicParameter.placeholder, generated);
+                            console.log(item.parameter.dynamicParameter.placeholder + " NAME");
+
+                        }
+
+
+
+                    }
+                }
+
+
+                sourceString += loop;
+
+            }
+        }
+    });
+    sourceString += "\n}\n";
+
+    return sourceString;
+
+}
+
+
+function installExternalLibs() {
+    for (var item of components) {
+        if (typeof item.librarys !== "undefined") {
+            for (var lib of item.librarys)
+                externallibs.push(lib)
+        }
+    }
+    // ToDo: Install: arduino --install-library
+
+    console.log(externallibs);
+}
 
 
 var app = express();
@@ -215,30 +392,38 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
 }));
 
 // open Frontend in Browser
-opn('http://127.0.0.1:3000')
+opn('http://127.0.0.1:3000');
 
 // start expressjs app
 app.listen(3000, function() {
     console.log('Example app listening on port 3000!');
 });
 
+
+
+// API Functions
+
+
 // Serve UI when GET / 
 app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname + '/../Frontend/ui.html'));
 });
+
+
+
 
 // API Step 0: send hw components to Frontend
 app.get('/stage0/getHWComponents', function(req, res) {
     // send Hardware Modules
     console.log(req.query); // debug
     var list = new Array;
-    for (var item = 0; item < components.length; item++) {
-        if (components[item].hardware == true) {
-            console.log(JSON.stringify(components[item].name));
+    for (var item of  components) {
+        if (item.hardware == true) {
+            console.log(JSON.stringify(item.name));
             list.push({
-                "name": components[item].name,
-                "description": components[item].description,
-                "bus": components[item].pins
+                "name": item.name,
+                "description": item.description,
+                "bus": item.pins
             });
         }
     }
@@ -278,14 +463,14 @@ app.get('/stage1/getSWComponents', function(req, res) {
 
     var list = new Array;
 
-    for (var item = 0; item < components.length; item++) {
+    for (var item of  components) {
         //	console.log(JSON.stringify(components[item].name));
 
-        if (components[item].hardware == false) {
-            console.log(JSON.stringify(components[item].name));
+        if (item.hardware == false) {
+            console.log(JSON.stringify(item.name));
             list.push({
-                "name": components[item].name,
-                "description": components[item].description
+                "name": item.name,
+                "description": item.description
             });
         }
     }
@@ -318,7 +503,7 @@ app.get('/stage2/getConfigurationOptions', function(req, res) {
 
     console.log(req.query);
     console.log(JSON.stringify(generateConfigurationOptions(swsel.concat(hwsel))));
-  
+
     res.send(generateConfigurationOptions(swsel.concat(hwsel)));
 });
 
@@ -333,163 +518,18 @@ app.post('/stage3/submitConfig', function(req, res) {
     res.send('VALID');
 });
 
-function generateSourcCode(){
-	var sortedModules = sortModules(hwsel.concat(swsel));
 
-    var sourceString = "";
-
-    // generate includes part by iterating through modules 
-    Object.keys(sortedModules).forEach(function(key) {
-
-        var val = sortedModules[key];
-        for (var i = 0; i < val.length; i++) {
-            if (val[i].sourceskel.includes != "null") {
-                sourceString += val[i].sourceskel.includes;
-            }
-
-        }
-    });
-    sourceString += "\n";
-
-    // generate declaraions part by iterating through modules 
-    Object.keys(sortedModules).forEach(function(key) {
-
-        var val = sortedModules[key];
-        for (var i = 0; i < val.length; i++) {
-
-            if (val[i].sourceskel.declarations != "null") {
-                //console.log(val[i].name + "VAL NAME");
-                var declarations = val[i].sourceskel.declarations;
-                //console.log(userconf.length + " USERCONF") ;
-                for (var j = 0; j < userconf.length; j++) {
-                    if (userconf[j].moduleName == val[i].name) {
-                        if (typeof userconf[j].staticParameter !== 'undefined') {
-
-                            Object.keys(userconf[j].staticParameter).forEach(function(key) {
-
-                                var kval = userconf[j].staticParameter[key];
-                                declarations = declarations.replace("$" + key, kval);
-                            });
-                        }
-                    }
-                }
-
-                //	console.log(declarations);
-
-
-
-                sourceString += declarations;
-
-            }
-        }
-    });
-    sourceString += "\n";
-
-    // generate functions part by iterating through modules 
-    Object.keys(sortedModules).forEach(function(key) {
-
-        var val = sortedModules[key];
-        for (var i = 0; i < val.length; i++) {
-
-            if (val[i].sourceskel.functions != "null") {
-                //console.log(val[i].name + "VAL NAME");
-                var functions = val[i].sourceskel.functions;
-                //console.log(userconf.length + " USERCONF") ;
-
-
-                //	console.log(declarations);
-
-
-
-                sourceString += functions;
-
-            }
-        }
-    });
-    sourceString +="\n";
-
-	// generate setup part by iterating through modules 
-
-    sourceString += "void setup(){\n";
-    Object.keys(sortedModules).forEach(function(key) {
-
-        var val = sortedModules[key];
-        for (var i = 0; i < val.length; i++) {
-
-            if (val[i].sourceskel.setup != "null") {
-
-                //console.log(val[i].name + "VAL NAME");
-                var setup = val[i].sourceskel.setup;
-                //console.log(userconf.length + " USERCONF") ;
-
-
-                //	console.log(declarations);
-
-
-
-                sourceString += setup;
-
-            }
-        }
-    });
-    sourceString+="\n}\n";
-
-	// generate loop part by iterating through modules 
-    sourceString += "void loop(){\n";
-    Object.keys(sortedModules).forEach(function(key) {
-
-        var val = sortedModules[key];
-        for (var i = 0; i < val.length; i++) {
-
-            if (val[i].sourceskel.loop != "null") {
-                var loop = val[i].sourceskel.loop;
-                for (var j = 0; j < userconf.length; j++) {
-                    if (userconf[j].moduleName == val[i].name) {
-
-                        var generated = "";
-                        if (typeof val[i].parameter.dynamicParameter !== 'undefined') {
-                            Object.keys(userconf[j].dynamicParameter).forEach(function(key) {
-                                var kval = userconf[j].dynamicParameter[key];
-                                if ((kval != "null") && (kval != "")) {
-                                    // TODO DYNAMIC!! AND FLEXIBLE
-                                    console.log(key + " : : : : " + kval);
-
-                                    generated += val[i].parameter.dynamicParameter.template.replace(val[i].parameter.dynamicParameter.parameterList[0].placeholder, key).replace(val[i].parameter.dynamicParameter.parameterList[1].placeholder, kval);
-                                }
-                       
-                            });
-                            loop = loop.replace("$"+val[i].parameter.dynamicParameter.placeholder, generated);
-                            console.log(val[i].parameter.dynamicParameter.placeholder + " NAME");
-
-                        }
-
-                            
-
-                    }
-                }
-
-
-                sourceString += loop;
-
-            }
-        }
-    });
-    sourceString += "\n}\n";
-
-	return sourceString;
-
-}
 // API Step 3.2: generate arduino code and send it to Frontend
 app.get('/stage3/getSourceCode', function(req, res) {
 
     var sourceString = generateSourcCode();
-	console.log(sourceString);
+    console.log(sourceString);
 
-    var response = new Object;
-    response.sourceString = sourceString;
-    response.usbports = new Array;
-
-    // create List of USB Ports
+    var response = {
+            sourceString: sourceString,
+            usbports: new Array
+        }
+        // create List of USB Ports
     SerialPort.list(function(err, ports) {
         ports.forEach(function(port) {
             if (typeof port.pnpId !== 'undefined') {
@@ -512,8 +552,9 @@ app.get('/stage3/getSourceCode', function(req, res) {
 // API Step 4.1: create List of USB Ports and send it to Frontend (REFRESH BUTTON)
 app.get('/stage4/getUSBDevices', function(req, res) {
 
-    var response = new Object;
-    response.usbports = new Array;
+    var response = {
+        usbports: new Array
+    };
 
     SerialPort.list(function(err, ports) {
         ports.forEach(function(port) {
@@ -569,37 +610,38 @@ app.post('/stage4/compile', function(req, res) {
 
 // import json and build
 app.post('/importjson', function(req, res) {
-	var decoded = new Buffer(req.body.iotconf.fileData.split(",")[1], 'base64').toString('ascii');
-	//console.log(decoded);
-	var data = JSON.parse(decoded);
-	console.log(data);
-	hwsel= new Array;
-	swsel=new Array;
+    var decoded = new Buffer(req.body.iotconf.fileData.split(",")[1], 'base64').toString('ascii');
+    //console.log(decoded);
+    var data = JSON.parse(decoded);
+    console.log(data);
 
- for (var hw = 0; hw < data.hardwareModules.length; hw++) {
-            for (var item = 0; item < components.length; item++) {
-                if (components[item].name == data.hardwareModules[hw]) {
-                    hwsel.push(components[item]);
-                }
+    // reinitialize arrays
+    hwsel = new Array;
+    swsel = new Array;
+
+    for (var hw = 0; hw < data.hardwareModules.length; hw++) {
+        for (var item = 0; item < components.length; item++) {
+            if (components[item].name == data.hardwareModules[hw]) {
+                hwsel.push(components[item]);
             }
         }
+    }
 
-	for (var sw = 0; sw < data.softwareModules.length; sw++) {
-	        for (var item = 0; item < components.length; item++) {
-                if (components[item].name == data.softwareModules[sw]) {
-                    swsel.push(components[item]);
-                }
+    for (var sw = 0; sw < data.softwareModules.length; sw++) {
+        for (var item = 0; item < components.length; item++) {
+            if (components[item].name == data.softwareModules[sw]) {
+                swsel.push(components[item]);
             }
         }
+    }
 
 
-	userconf=data.configuration;
-	var sourcecode = generateSourcCode();
-	console.log(sourcecode);
-	var response = new Object;
-    response.sourceString = sourcecode;
-    response.usbports = new Array;
-
+    userconf = data.configuration;
+    var response = {
+        sourceString: generateSourcCode(),
+        usbports: new Array
+    }
+    console.log(response.sourceString);
     // create List of USB Ports
     SerialPort.list(function(err, ports) {
         ports.forEach(function(port) {
@@ -620,16 +662,15 @@ app.post('/importjson', function(req, res) {
 
 // export json config
 app.get('/exportjson', function(req, res) {
-  var data = new Object;
-  data.configuration=userconf;
-  data.hardwareModules=new Array;
-  data.softwareModules=new Array;
-   for (var hw = 0; hw < hwsel.length; hw++) 
-   		data.hardwareModules.push(hwsel[hw].name)
-   for (var sw = 0; sw < swsel.length; sw++) 
-   		data.softwareModules.push(swsel[sw].name)
-   	console.log(JSON.stringify(data));
-   	res.send(data);
+    var data = {
+        configuration: userconf,
+        hardwareModules: new Array,
+        softwareModules: new Array
+    };
+    for (var hw = 0; hw < hwsel.length; hw++)
+        data.hardwareModules.push(hwsel[hw].name)
+    for (var sw = 0; sw < swsel.length; sw++)
+        data.softwareModules.push(swsel[sw].name)
+    console.log(JSON.stringify(data));
+    res.send(data);
 });
-
-
