@@ -1,12 +1,15 @@
 {
-  "name": "backend",
+  "name": "IoTiZeB",
   "version": "1.0.0",
-  "description": "",
+  "description": "IoT - the easy way",
   "main": "app.js",
+  "bin" : { "iotize" : "./app.js" } ,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Daniel Goetz",
+  "url" : "https://github.com/odessa2/IoTize",
+  "email": "odessa2@web.de",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.17.2",
@@ -14,5 +17,9 @@
     "opn": "^5.1.0",
     "package.json": "^2.0.1",
     "serialport": "^5.0.0-beta7"
+  },
+   "pkg": {
+    "scripts": "iotmodules/*.json",
+    "assets": ["Frontend/ui.html", "Frontend/js/ui.js"]
   }
 }

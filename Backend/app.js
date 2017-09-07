@@ -10,16 +10,29 @@ var exec = require('child_process').exec;
 
 var rules = require('./rules.json');
 
+// static, in future versions modular and replacable
+var buildcmd = 'arduino --board esp8266:esp8266:d1_mini --port $PORT --upload tmp_build_dir/sketch.ino --verbose --pref build.flash_ld=eagle.flash.4m.ld';
 
-var cmd = 'arduino --board esp8266:esp8266:d1_mini --port $PORT --upload tmp_build_dir/sketch.ino --verbose --pref build.flash_ld=eagle.flash.4m.ld';
-
-var modulespath = "./iotmodules/";
+var modulespath = path.join(process.cwd() , "/iotmodules/");
 var components = new Array();
 var hwsel = new Array();
 var swsel = new Array();
 var userconf = new Array();
 
 var externallibs = new Array();
+
+//var installdependencys = false;
+
+// Process Arguments
+
+process.argv.forEach(function(val, index, array) {
+    // Debug: CLI Arguments
+    console.log(index + ': ' + val);
+    // if (val.includes("install-librarys")){
+    //  installdependencys = true;
+//}
+});
+
 
 // read modules from folder into components Array
 fs.readdir(modulespath, (err, files) => {
@@ -31,6 +44,8 @@ fs.readdir(modulespath, (err, files) => {
     });
     installExternalLibs();
 })
+
+
 
 
 
@@ -201,8 +216,8 @@ function sortModules(modules) {
         processing: new Array,
         misc: new Array
     }
- for (var item of  selectedModules) {
- //   for (var i = 0; i < selectedModules.length; i++) {
+    for (var item of selectedModules) {
+        //   for (var i = 0; i < selectedModules.length; i++) {
         if (item.type == "software") {
             sortedModules.software.push(item);
         } else if (item.type == "sensor") {
@@ -368,13 +383,33 @@ function generateSourcCode() {
 
 
 function installExternalLibs() {
+    var base = "arduino --install-library \"NAME\" && ";
+    var ges = "";
+
     for (var item of components) {
         if (typeof item.librarys !== "undefined") {
-            for (var lib of item.librarys)
-                externallibs.push(lib)
+            for (var lib of item.librarys) {
+                externallibs.push(lib);
+                ges += base.replace("NAME", lib)
+            }
         }
     }
-    // ToDo: Install: arduino --install-library
+
+    // ToDo: make configurable and only install when chosen.
+    /*  if (installdependencys){
+    ges+="echo 'done'";
+    exec(ges, (err, stdout, stderr) => {
+        console.log('stdout is:' + stdout);
+        console.log('stderr is:' + stderr);
+        console.log('error is:' + err);
+        error = stderr;
+    }).on('close', (code) => {
+        //
+        console.log('final exit code is', code);
+
+    });
+   
+} */
 
     console.log(externallibs);
 }
@@ -383,7 +418,7 @@ function installExternalLibs() {
 var app = express();
 
 // Static HTML/CSS/JS Files
-app.use(express.static('../Frontend'));
+app.use(express.static(path.join(process.cwd(),'../Frontend')));
 
 // Plugin for parsing POST Data
 app.use(bodyParser.json());
@@ -406,7 +441,7 @@ app.listen(3000, function() {
 
 // Serve UI when GET / 
 app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname + '/../Frontend/ui.html'));
+    res.sendFile(path.join(process.cwd(),'../Frontend/ui.html'));
 });
 
 
@@ -417,7 +452,7 @@ app.get('/stage0/getHWComponents', function(req, res) {
     // send Hardware Modules
     console.log(req.query); // debug
     var list = new Array;
-    for (var item of  components) {
+    for (var item of components) {
         if (item.hardware == true) {
             console.log(JSON.stringify(item.name));
             list.push({
@@ -463,7 +498,7 @@ app.get('/stage1/getSWComponents', function(req, res) {
 
     var list = new Array;
 
-    for (var item of  components) {
+    for (var item of components) {
         //	console.log(JSON.stringify(components[item].name));
 
         if (item.hardware == false) {
@@ -585,9 +620,9 @@ app.post('/stage4/compile', function(req, res) {
     fs.writeFile('tmp_build_dir/sketch.ino', data.code, function(err) {
         if (err) res.send("error saving file");
     });
-    console.log("Build Command: " + cmd.replace("$PORT", data.usbport));
+    console.log("Build Command: " + buildcmd.replace("$PORT", data.usbport));
     var exitcode = -1;
-    exec(cmd.replace("$PORT", data.usbport), (err, stdout, stderr) => {
+    exec(buildcmd.replace("$PORT", data.usbport), (err, stdout, stderr) => {
         console.log('stdout is:' + stdout)
         console.log('stderr is:' + stderr)
         console.log('error is:' + err)

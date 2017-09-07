@@ -3,14 +3,16 @@ IoTize(.eu) - making IoT accessible to non-nerds
 
 This is the WIP of my masters thesis.
 
+
+
 ## About
 The goal of my thesis is to bring the Internet of Things - accompanied by the constant networking - closer to non tech-savvy people. The access to the IoT will be further facilitated by using low-cost hardware such as the esp8266 chip (on Wemos D1 mini [pro]).
 
 In the proposed solution, a configuration tool, can be used - in combination with the microcontroller and so called "shields" (periphery) - to bring modular and connected sensors online, without any programming skills. The tool generates the necessary code, compiles it, and then flashes the binary to the microcontroller.
 
 ## Note
-This preview Version requires Arduino IDE with esp8266 plugin in path.  Requiered 3rd Party Libraries are packaged as  
-> prev_libs.tar.gz
+This preview Version requires Arduino IDE with esp8266 plugin in path.  Requiered 3rd Party Libraries are  are installed automatically, if started with argument "install-librarys".
+
 
 ## Backend
 
@@ -31,13 +33,14 @@ This preview Version requires Arduino IDE with esp8266 plugin in path.  Requiere
 - WiFi Simple
 - Thingspeak
 - Volkszaehler
+- MQTT
 
 ## Planned Features/ToDo
+- UI/Packaging for starting without CommandLine
 
 ### Planned Modules
 - Button
 - IFTTT
-- MQTT
 - HTTP
 - WiFi Multi
 - MicroSD Logging
