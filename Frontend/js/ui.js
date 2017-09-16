@@ -44,7 +44,7 @@ $(document).ready(function() {
         setProgress(0);
 
         //load module data
-        $.get("stage0/getHWComponents", function(data) {
+        $.get("/stage0/getHWComponents", function(data) {
         for (var i = 0; i < data.length; i++) {
                 $("#stage1list").append('<tr><td><input type="checkbox" id="s1cb' + i + '" value=""></td><td id="hw' + i + '"">' + data[i].name.toString() + '</td><td>' + data[i].description.toString() + '</td><td>' + data[i].bus.toString() + '</td></tr>');
 

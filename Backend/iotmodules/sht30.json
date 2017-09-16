@@ -1,5 +1,5 @@
 {
-	"name": "sht30",
+	"name": "SHT30",
 	"description": "temperature and humidity sensor",
 	"type":"sensor",
 	"hardware":true,

@@ -19,7 +19,6 @@
     "serialport": "^5.0.0-beta7"
   },
    "pkg": {
-    "scripts": "iotmodules/*.json",
-    "assets": ["Frontend/ui.html", "Frontend/js/ui.js"]
+    "scripts": "iotmodules/*.json"
   }
 }

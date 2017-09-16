@@ -6,20 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
     <title>IoTiZe - Modules Configurator</title>
+    <!-- jQuery -->
     <script src="js/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
+    
     <!-- Bootstrap -->
+    <script src="js/bootstrap.min.js"></script>
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <!-- highlight.js -->
     <link rel="stylesheet" href="highlighterstyles/default.css">
     <script src="js/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
+    <!-- Anwendungslogik -->
     <script src="js/ui.js"></script>
   </head>
   <body>
     <div class="page-header">
       <a class="navbar-brand" href="#">
         <img width="70" alt="Brand" src="img/wemos_fritzing.png">
-      </a> </br>
+      </a> <br>
       <h1>IoTiZe Modules Configurator</h1>
     </div>
     <div class="progress">
@@ -30,20 +34,19 @@
       <div class="jumbotron" id="step0" style="display:block;">
         <p>Welcome to IoTiZe - you interactive code generator and tool for getting started with IoT devices - without writing a single line of code. Using Wemos D1 Mini and available Hardware Modules - called shields - you can now build your own sensor-node, record data to the cloud or switch eĺectronics based on sensor values.
         </p>
-        </br>
+        <br>
         <p>
           <a id="stepbtn0" class="btn btn-primary btn-lg" href="#step1" role="button">Let's get started &raquo;
           </a>
         </p>
-        <p>
-          
+        <!--p-->          
           <form method="post" enctype="multipart/form-data">
             <label>OR: Choose an exported IoTiZe Configuration
               <input id="importConfFileInput" type="file" size="50" accept=".iotjson">
             </label>
             <a  id="importConfFileBtn" class="btn btn-default" href="#" role="button">Import</a>
           </form>
-        </p>
+        <!--/p-->
       </div>
     </div>
     <div class="container">
@@ -69,9 +72,9 @@
       </p>
     </div>
   </div>
+   <div class="container">
   <div class="jumbotron" id="step2" style="display:none;">
     <div id="s2warning" style="display:none;" class="alert alert-danger"></div>
-    <div class="container">
       <h1>Step 2:
       Software Modules</h1>
       <p>This is the second Step. Please choose your desired software modules for your IoT Project</p>
@@ -85,7 +88,7 @@
         </thead>
       <tbody id="stage2list"></tbody>
     </table>
-  </table>
+  
   <p>
     <a id="stepbtn2"  class="btn btn-primary btn-lg" href="#" role="button">Next &raquo;
     </a>
@@ -103,7 +106,7 @@
     
   </div>
   <p>
-    <a id="stepbtn3"  class="btn btn-primary btn-lg" href="#step3" role="button">Weiter &raquo;
+    <a id="stepbtn3"  class="btn btn-primary btn-lg" href="#step3" role="button">Next &raquo;
     </a>
   </p>
 </div>
@@ -116,57 +119,52 @@
   <h1>Step 4:
   Validate, Build and Flash</h1>
   <p>Bitte warten Sie, bis der Quellcode generiert und Compiliert wurde. Nach erfolgreichem Build erhalten Sie die Möglichkeit, den USB Port auszuwählen, über den das esp8266 Board bespielt werden soll.</p>
-                      
-  <div id="codeViewDiv"  style="display:block;">
-  <pre> <code class="hljs cpp" id="generatedCode">&lt;p&gt;Error...&lt;/p&gt;
-        &lt;p&gt;please start over...&lt;/p&gt;
-  </code></pre> </div>
-  <div id="codeEditDiv"  style="display:none;">
-  <textarea id="codeEdit" rows="40" cols="90">
-  </textarea> </br>
-          <a  id="saveCodeBtn" class="btn btn-default" href="#" role="button">Save Code</a>
-          <a  id="discardCodeBtn" class="btn btn-default" href="#" role="button">Discard Changes</a>
-    
-  </div>
   
-
-  <p>
-  <div id="editRow" class="row">
-        <div class="col-md-4">  
-          <a  id="editCodeBtn" class="btn btn-default" href="#" role="button">Edit Code</a>
-       </div>
-
-  </div></br>
-    <div class="row">
-      <div id="usbSelectorDiv" class="col-md-8"></div>
-
-      <div class="col-md-4"> <button type="button" id="usbrefresh" class="btn btn-default btn-sm">  <span class="glyphicon glyphicon-refresh"></span> Refresh USB Ports </button></div>
-    </div>
-
-    </br>
-    <div class="row">
-      <div class="col-md-4"><a id="stepbtn4" class="btn btn-primary btn-lg" href="#step4" role="button">Go! &raquo;
-      </a></div>
-      <div class="col-md-4">
+  <div id="codeViewDiv"  style="display:block;">
+      <pre> <code class="hljs cpp" id="generatedCode">&lt;p&gt;Error...&lt;/p&gt;
+              &lt;p&gt;please start over...&lt;/p&gt;
+    </code></pre> </div>
+    <div id="codeEditDiv"  style="display:none;">
+      <textarea id="codeEdit" rows="40" cols="90">
+      </textarea> <br>
+      <a  id="saveCodeBtn" class="btn btn-default" href="#" role="button">Save Code</a>
+      <a  id="discardCodeBtn" class="btn btn-default" href="#" role="button">Discard Changes</a>
       
-        
-      </div>
-      <div class="col-md-4">
-        
-        <form method="post" enctype="multipart/form-data">
-          <a  id="exportConfFileBtn" class="btn btn-default" href="#" role="button">Export IotiZe Configuration</a>
-        </form>
-      </div>
     </div>
     
-  </p>
-</div>
+    <p>
+      <div id="editRow" class="row">
+        <div class="col-md-4">
+          <a  id="editCodeBtn" class="btn btn-default" href="#" role="button">Edit Code</a>
+        </div>
+      </div><br>
+      <div class="row">
+        <div id="usbSelectorDiv" class="col-md-8"></div>
+        <div class="col-md-4"> <button type="button" id="usbrefresh" class="btn btn-default btn-sm">  <span class="glyphicon glyphicon-refresh"></span> Refresh USB Ports </button></div>
+      </div>
+      <br>
+      <div class="row">
+        <div class="col-md-4"><a id="stepbtn4" class="btn btn-primary btn-lg" href="#step4" role="button">Go! &raquo;
+        </a></div>
+        <div class="col-md-4">
+          
+          
+        </div>
+        <div class="col-md-4">
+          
+          <form method="post" enctype="multipart/form-data">
+            <a  id="exportConfFileBtn" class="btn btn-default" href="#" role="button">Export IotiZe Configuration</a>
+          </form>
+        </div>
+      </div>
+  
+  </div>
 </div>
 <hr>
 <footer>
-<p>&copy;
-2017 IoTizeMe</p>
+  <p>&copy;
+  2017 IoTiZe - Daniel Goetz</p>
 </footer>
-</div>
+
 </body>
 </html>

@@ -1,12 +1,18 @@
 // Require Section
 
 var express = require('express');
-var SerialPort = require('serialport');
+var bodyParser = require("body-parser");
+
 var path = require('path');
 var fs = require('fs');
+
+
 var opn = require('opn');
-var bodyParser = require("body-parser");
+
+var SerialPort = require('serialport');
 var exec = require('child_process').exec;
+var execSync = require('child_process').execSync;
+
 
 var rules = require('./rules.json');
 
@@ -14,6 +20,8 @@ var rules = require('./rules.json');
 var buildcmd = 'arduino --board esp8266:esp8266:d1_mini --port $PORT --upload tmp_build_dir/sketch.ino --verbose --pref build.flash_ld=eagle.flash.4m.ld';
 
 var modulespath = path.join(process.cwd() , "/iotmodules/");
+
+
 var components = new Array();
 var hwsel = new Array();
 var swsel = new Array();
@@ -21,6 +29,9 @@ var userconf = new Array();
 
 var externallibs = new Array();
 
+var installonly = false;
+
+//}
 //var installdependencys = false;
 
 // Process Arguments
@@ -28,9 +39,11 @@ var externallibs = new Array();
 process.argv.forEach(function(val, index, array) {
     // Debug: CLI Arguments
     console.log(index + ': ' + val);
-    // if (val.includes("install-librarys")){
-    //  installdependencys = true;
-//}
+    if (val.includes("install-librarys")){
+        installonly = true;
+       
+    }
+    //  
 });
 
 
@@ -42,7 +55,7 @@ fs.readdir(modulespath, (err, files) => {
             console.log("Loaded Module: " + file);
         }
     });
-    installExternalLibs();
+    installExternalLibs(installonly);
 })
 
 
@@ -382,7 +395,7 @@ function generateSourcCode() {
 }
 
 
-function installExternalLibs() {
+function installExternalLibs(doit) {
     var base = "arduino --install-library \"NAME\" && ";
     var ges = "";
 
@@ -395,24 +408,32 @@ function installExternalLibs() {
         }
     }
 
-    // ToDo: make configurable and only install when chosen.
-    /*  if (installdependencys){
-    ges+="echo 'done'";
-    exec(ges, (err, stdout, stderr) => {
+
+    if (doit){
+        ges+="echo 'done'";
+        exec(ges, (err, stdout, stderr) => {
         console.log('stdout is:' + stdout);
         console.log('stderr is:' + stderr);
         console.log('error is:' + err);
         error = stderr;
     }).on('close', (code) => {
-        //
-        console.log('final exit code is', code);
+       console.log('final exit code is', code);
 
+    }).on('exit', (code) => {
+        process.exit(0);
     });
+   
+
+    }
+    // ToDo: make configurable and only install when chosen.
+    /*  if (installdependencys){
+   
    
 } */
 
     console.log(externallibs);
 }
+
 
 
 var app = express();
@@ -426,13 +447,18 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: true
 }));
 
-// open Frontend in Browser
-opn('http://127.0.0.1:3000');
+
 
 // start expressjs app
 app.listen(3000, function() {
-    console.log('Example app listening on port 3000!');
+    console.log('IoTiZe listening on port 3000!');
 });
+
+
+// open Frontend in Browser - not working when packaged, patch available but not in stable
+opn('http://127.0.0.1:3000');
+
+
 
 
 
