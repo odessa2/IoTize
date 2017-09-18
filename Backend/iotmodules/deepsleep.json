@@ -7,7 +7,7 @@
 	"parameter": {
 	 "parameter": [
             {
-                "name": "deepSleepIntervall",
+                "name": "deepSleepInterval",
                 "description": {
                     "en": "Duration of Sleep in Minutes - overwrites other configured intervalls"
                 } 
@@ -17,10 +17,10 @@
 	"values" : "null",
 	"sourceskel":  {
 	"includes": ""  , 
-	"declarations":"#define deepSleepIntervall $deepSleepIntervall \n",
+	"declarations":"#define deepSleepInterval $deepSleepInterval \n",
 	"functions":"null",
 	"setup" : "", 
-	"loop": "\tESP.deepSleep(deepSleepIntervall * 60 * 1000000);\n\tdelay(100);\n"
+	"loop": "\tESP.deepSleep(deepSleepInterval * 60 * 1000000);\n\tdelay(100);\n"
 
 	}
 }

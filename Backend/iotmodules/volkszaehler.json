@@ -6,7 +6,7 @@
   "dependency": "wificlient",
   "parameter": {
     "parameter": [
-    {"name":"volkszaehler_interval", "description":{"en": "Repetition intervall in Seconds"}}
+    {"name":"volkszaehler_interval", "description":{"en": "Repetition interval in Seconds"}}
 
     ],
     "dynamicParameter": {
@@ -30,9 +30,9 @@
   "values": "null",
   "sourceskel": {
     "includes": "#include <Ticker.h>",
-    "declarations": "const char* host = \"demo.volkszaehler.org\";Ticker volkszaehlerTicker;\nboolean volkszaehlerTrigger = true;\nconst int volkszaehlerTimerIntervall = $volkszaehler_interval;\n\n\n",
+    "declarations": "const char* host = \"demo.volkszaehler.org\";Ticker volkszaehlerTicker;\nboolean volkszaehlerTrigger = true;\nconst int volkszaehlerTimerInterval = $volkszaehler_interval;\n\n\n",
     "functions": "void triggerVolkszaehler(){\n\tvolkszaehlerTrigger=true;\n}\n\nvoid submitToVolkszaehler(String channelID, String value){\n\tconst int httpPort = 80;\n\tif (!client.connect(host, httpPort)) {\n\t\treturn;\n\t}\n\n\tString url = \"/middleware.php/data/\";\n\turl += channelID;\n\turl += \".json?operation=add\";\n\turl += \"&value=\";\n\turl +=  value;\n\n\tclient.print(String(\"GET \") + url + \" HTTP/1.1\\r\\n\" +\n\t\t\"Host: \" + host + \"\\r\\n\" + \n\t\t\"Connection: close\\r\\n\\r\\n\");\n\tunsigned long timeout = millis();\n\twhile (client.available() == 0) {\n\tif (millis() - timeout > 5000) {\n\tclient.stop();\n\treturn;\n\t}}}\n\n",
-    "setup": "volkszaehlerTicker.attach(volkszaehlerTimerIntervall, triggerVolkszaehler);\n",
+    "setup": "volkszaehlerTicker.attach(volkszaehlerTimerInterval, triggerVolkszaehler);\n",
     "loop": "\t if (volkszaehlerTrigger){ \n\t$GENERATEDSTRINGS\n\tvolkszaehlerTrigger=false;\n}"
   }
 }
