@@ -1,7 +1,7 @@
 # IoTize
 IoTize(.eu) - a modular IoT application development kit
 
-This application is the result of my masters thesis project.
+This application is the result of my masters thesis.
 
 
 ## About
@@ -15,7 +15,7 @@ In the proposed solution, a configuration tool, can be used - in combination wit
 
 ## Howto
 
-If you don't have them yet, install esp8266 platform package for Arduino, you can get them by executing the following commands:
+If you don't have it yet, install esp8266 platform package for Arduino by executing the following commands:
 
 First, add the new URL to Arduino's board manager
 >$ arduino --pref boardsmanager.additional.urls=$(echo $(arduino --get-pref boardsmanager.additional.urls)",http://arduino.esp8266.com/stable/package_esp8266com_index.json") --save-prefs
