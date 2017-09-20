@@ -1,55 +1,81 @@
 # IoTize
 IoTize(.eu) - making IoT accessible to non-nerds
 
-This is the WIP of my masters thesis.
-
+This application is the result of my masters thesis project.
 
 
 ## About
-The goal of my thesis is to bring the Internet of Things - accompanied by the constant networking - closer to non tech-savvy people. The access to the IoT will be further facilitated by using low-cost hardware such as the esp8266 chip (on Wemos D1 mini [pro]).
+The goal of my thesis is to bring the Internet of Things - accompanied by the constant networking - closer to non tech-savvy people. The access to the IoT will be further facilitated by using low-cost hardware such as the esp8266 chip (on WEMS D1 mini [Pro]).
 
 In the proposed solution, a configuration tool, can be used - in combination with the microcontroller and so called "shields" (periphery) - to bring modular and connected sensors online, without any programming skills. The tool generates the necessary code, compiles it, and then flashes the binary to the microcontroller.
 
-## Note
-This preview Version requires Arduino IDE with esp8266 plugin in path.  Requiered 3rd Party Libraries are  are installed automatically, if started with argument "install-librarys".
+## Requirement
+- Node.js (>v6)
+- Arduino IDE 
 
+## Howto
 
-## Backend
+If you don't have them yet, install esp8266 platform package for Arduino, you can get them by executing the following commands:
 
-1. fetch dependencies
->npm     install
-2. start app
->node app.js
-3. open url in browser (automatic)
-> ==[http://127.0.0.1:3000](http://127.0.0.1:3000) ==
+First, add the new URL to Arduino's board manager
+>$ arduino --pref boardsmanager.additional.urls=$(echo $(arduino --get-pref boardsmanager.additional.urls)",http://arduino.esp8266.com/stable/package_esp8266com_index.json") --save-prefs
+
+Then, install the package
+
+>$ arduino --install-boards esp8266:esp8266
+
+## Howto
+
+Get IoTize from git and change directory:
+
+>$ git clone https://github.com/odessa2/IoTize.git && cd IoTize/Backend 
+
+### Download dependencies
+
+Fetch Node.js dependencies:
+>$ npm install # fetch node dependencies
+
+Before running for the first time, some additional Arduino libraries have to be installed:
+
+>$ node app.js install-librarys # install required iot module libraries
+
+### Start the application
+
+>$ node app.js
+
+This should open the UI in your default webbrowser. It can be accessed via this URL: ==[http://127.0.0.1:3000](http://127.0.0.1:3000) ==
 
 ## Current Features
 
 ### Working Modules
-- Relay
 - DS18B20 Temperature Sensor
-- SHT30
+- SHT30 Temperature and Humidity Sensor
 - MicroOLED Display
-- WiFi Simple
+- Relay
+- WiFi Simple + Changeable
 - Thingspeak
 - Volkszaehler
+- Twilio
 - MQTT
+- DeepSleep
 
 ## Planned Features/ToDo
-- UI/Packaging for starting without CommandLine
+- more automation for making usage of commandline obsolete
 
 ### Planned Modules
-- Button
+- 1-Button
 - IFTTT
 - HTTP
-- WiFi Multi
 - MicroSD Logging
-
-### Misc
-- improve formatting of generated code
-
+- WiFi Multi
 
 
 ## Documentation and Project Page:
 
  ==[https://iotize.eu/](https://iotize.eu/) ==
+ 
+## License
+This source-code is released under the ISC License (ISC) 
+
+
+ 
