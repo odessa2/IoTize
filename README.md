@@ -33,11 +33,11 @@ Get IoTize from git and change directory:
 ### Download dependencies
 
 Fetch Node.js dependencies:
->$ npm install # fetch node dependencies
+>$ npm install
 
 Before running for the first time, some additional Arduino libraries have to be installed:
 
->$ node app.js install-librarys # install required iot module libraries
+>$ node app.js install-librarys 
 
 ### Start the application
 
