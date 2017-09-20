@@ -1,5 +1,5 @@
 # IoTize
-IoTize(.eu) - making IoT accessible to non-nerds
+IoTize(.eu) - a modular IoT application development kit
 
 This application is the result of my masters thesis project.
 
