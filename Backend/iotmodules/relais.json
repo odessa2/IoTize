@@ -1,4 +1,5 @@
 {
+  "iotize-schema-version" : "1.0",
   "name": "Relais",
   "description": "an electrically operated switch",
   "type": "processing",

@@ -1,4 +1,5 @@
 {
+  "iotize-schema-version" : "1.0",
   "name": "Thingspeak",
   "description": "code for sending data to thingspeak",
   "type": "service",
@@ -30,15 +31,16 @@
 
 
       ],
-      "template": "thingspeakdata += \"&$FIELD=\";thingspeakdata += String($VAL);\n\t"
+      "template": "\t\tthingspeakdata += \"&$FIELD=\";thingspeakdata += String($VAL);\n"
     }
   },
   "values": "null",
   "sourceskel": {
     "includes": "#include <Ticker.h>",
-    "declarations": "const char* host = \"api.thingspeak.com\";\nconst char* thingspeak_key = \"$thingspeakKey\";Ticker thingiverseTicker;\nboolean thingiverseTrigger = true;\nconst int thingiverseTimerInterval = $thingspeak_interval;",
-    "functions": "void triggerThingiverse(){\n\tthingiverseTrigger=true;\n}\nvoid submitToThingspeak(String data){\n\tWiFiClient client;\n\tconst int httpPort = 80;\n\tif (!client.connect(host, httpPort)) {  return;   }\n\tString url = \"/update?api_key=\";\n\turl += String(thingspeak_key);\n\turl += data;\n\t\n\tclient.print(String(\"GET \") + url + \" HTTP/1.1\\r\\n\" + \"Host: \" + host + \"\\r\\n\" +  \"Connection: close\\r\\n\\r\\n\");delay(10);\n\tunsigned long timeout = millis(); while (client.available() == 0) { \n\tif (millis() - timeout > 5000) \n\t{\n\tclient.stop();\n\treturn; \n\t}\n\t }\n\t}\n",
-    "setup": "  thingiverseTicker.attach(thingiverseTimerInterval, triggerThingiverse);",
-    "loop": "\tif (thingiverseTrigger){\n\t\tString thingspeakdata;\n\t$GENERATEDSTRINGS submitToThingspeak(thingspeakdata);\n\t\tthingiverseTrigger=false;\n}\n"
+    "declarations": "const char* host = \"api.thingspeak.com\";\nconst char* thingspeak_key = \"$thingspeakKey\";\nTicker thingiverseTicker;\nboolean thingiverseTrigger = true;\nconst int thingiverseTimerInterval = $thingspeak_interval;\n",
+    "functions": "void triggerThingiverse(){\n\tthingiverseTrigger=true;\n}\nvoid submitToThingspeak(String data){\n\tconst int httpPort = 80;\n\tif (!client.connect(host, httpPort)) { return; }\n\tString url = \"/update?api_key=\";url += String(thingspeak_key);url += data;\n\tclient.print(String(\"GET \") + url + \" HTTP/1.1\\r\\n\" + \"Host: \" + host + \"\\r\\n\" +  \"Connection: close\\r\\n\\r\\n\");\n\tdelay(10);\n\tunsigned long timeout = millis();\n\twhile (client.available() == 0) {\n\t\tif (millis() - timeout > 5000)\n\t\t{\n\t\t\tclient.stop();\n\t\t\treturn;\n\t\t}\n\t}\n}\n",
+    "setup": "\tthingiverseTicker.attach(thingiverseTimerInterval, triggerThingiverse);",
+    "loop": "\tif (thingiverseTrigger){\n\t\tString thingspeakdata;\n$GENERATEDSTRINGS \t\tsubmitToThingspeak(thingspeakdata);\n\t\tthingiverseTrigger=false;\n\t}\n"
   }
 }
+

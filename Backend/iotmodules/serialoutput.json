@@ -1,4 +1,5 @@
 {
+	"iotize-schema-version" : "1.0",
 	"name": "SerialConsole",
 	"description": "enables Serial Output and humidity sensor",
 	"type":"service",
@@ -17,7 +18,7 @@
 	"values" : "null",
 	"sourceskel":  {
 	"includes": ""  , 
-	"declarations":"#define baudrate $baudrate \n",
+	"declarations":"#define baudrate $baudrate\n",
 	"functions":"null",
 	"setup" : "\tSerial.begin(baudrate);\n", 
 	"loop": ""

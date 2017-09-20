@@ -1,4 +1,5 @@
 {
+	"iotize-schema-version" : "1.0",
 	"name": "DeepSleep",
 	"description": "enables Ultra Low Power Hibernation - connect D0 to RST",
 	"type":"misc",
