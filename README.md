@@ -3,6 +3,7 @@ IoTize(.eu) - a modular IoT application development kit
 
 This application is the result of my masters thesis.
 
+Note: due to an unfixed bug, the temporary build directory may have to be created manually (mkdir Backend/tmp_build_dir)
 
 ## About
 The goal of my thesis is to bring the Internet of Things - accompanied by the constant networking - closer to non tech-savvy people. The access to the IoT will be further facilitated by using low-cost hardware such as the esp8266 chip (on WEMS D1 mini [Pro]).
@@ -58,7 +59,8 @@ This should open the UI in your default webbrowser. It can be accessed via this 
 - Twilio
 - MQTT
 - DeepSleep
-
+- BMP180 Pressure/Temperature Sensor(new)
+ 
 ## Planned Features/ToDo
 - more automation for making usage of commandline obsolete
 
@@ -68,6 +70,11 @@ This should open the UI in your default webbrowser. It can be accessed via this 
 - HTTP
 - MicroSD Logging
 - WiFi Multi
+
+## Changelog ##
+- added Changelog to README
+- added BMP180 Sensor
+- added Bug-Notice
 
 
 ## Documentation and Project Page:

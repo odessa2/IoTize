@@ -1,0 +1,23 @@
+{
+	"iotize-schema-version" : "1.0",
+	"name": "BMP180",
+	"description": "temperature and barometric pressure sensor",
+	"type":"sensor",
+	"hardware":true,
+	"pins":"i2c",
+	"dependency": "null",
+	"librarys" : ["Adafruit_Sensor.h","Adafruit_BMP085_U.h"],
+	"parameter": "null",
+	"values" : [
+	  {"name":"bmp180temperature", "description":{"en": "Temperature reported by BMP180 Sensor"}},
+      {"name":"bmp180pressure", "description":{"en": "Barometric pressure reported by BMP180 Sensor"}}
+	],
+	"sourceskel":  {
+	"includes":"#include <Wire.h>\n#include <Adafruit_Sensor.h>\n#include <Adafruit_BMP085_U.h>\n"  , 
+	"declarations":"String bmp180temperature;\nString bmp180pressure;\n\nAdafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(10085);\n\n" ,
+	"functions":"null",
+	"setup" : "\t/* Initialise the sensor */\n\tif(!bmp.begin())\n\t\t{\n\t\t/* There was a problem detecting the BMP085 ... check your connections */\n\t\tSerial.print(\"Ooops, no BMP085 detected ... Check your wiring or I2C ADDR!\");\n\t\twhile(1);\n\t}\n",
+	"loop": "\tsensors_event_t event;\n\tbmp.getEvent(&event);\n\t/* Display the results (barometric pressure is measure in hPa) */\n\tif (event.pressure)\n\t{\n\t\t/* Display atmospheric pressue in hPa */\n\t\tSerial.print(\"Pressure:    \");\n\t\tSerial.print(event.pressure);\n\t\tSerial.println(\" hPa\");\n\n\t\tfloat temperature; \n\t\tbmp.getTemperature(&temperature);\n\t\tSerial.print(\"Temperature: \");\n\t\tSerial.print(temperature);\n\t\tSerial.println(\" C\");\n\t\tbmp180temperature=temperature;\n\t\tbmp180pressure=event.pressure;\n\t}\n\tdelay(1000);"
+	}
+}
+
