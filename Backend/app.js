@@ -1,8 +1,8 @@
 // Require Section
 
 var express = require('express');
-var bodyParser = require("body-parser");
-
+var bodyParser = require('body-parser');
+var os = require('os');
 var path = require('path');
 var fs = require('fs');
 
@@ -17,7 +17,16 @@ var execSync = require('child_process').execSync;
 var rules = require('./rules.json');
 
 // static, in future versions modular and replacable
-var buildcmd = 'arduino --board esp8266:esp8266:d1_mini --port $PORT --upload tmp_build_dir/sketch.ino --verbose --pref build.flash_ld=eagle.flash.4m.ld';
+var operatingsystem = os.platform();
+
+var arduino_bin;
+
+if (operatingsystem == "darwin") 
+    arduino_bin = "/Applications/Arduino.app/Contents/MacOS/Arduino";
+else if (operatingsystem == "linux")
+    arduino_bin = "arduino";
+
+var buildcmd = arduino_bin + ' --board esp8266:esp8266:d1_mini --port $PORT --upload tmp_build_dir/sketch.ino --verbose --pref build.flash_ld=eagle.flash.4m.ld';
 
 var modulespath = path.join(process.cwd() , "/iotmodules/");
 
@@ -619,7 +628,7 @@ app.get('/stage4/getUSBDevices', function(req, res) {
 
     SerialPort.list(function(err, ports) {
         ports.forEach(function(port) {
-            if (typeof port.pnpId !== 'undefined') {
+            if (typeof port.comName !== 'undefined') {
                 response.usbports.push(port);
                 console.log(port.comName);
                 //	console.log(port.pnpId);
@@ -630,7 +639,6 @@ app.get('/stage4/getUSBDevices', function(req, res) {
         res.send(response);
 
     });
-
 });
 
 // API Step 4.2: receive final sourcecode from Frontend and build and flash it

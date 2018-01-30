@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "description": "IoT - the easy way",
   "main": "app.js",
-  "bin" : { "iotize" : "./app.js" } ,
+  "bin": {
+    "iotize": "./app.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Daniel Goetz",
-  "url" : "https://github.com/odessa2/IoTize",
+  "url": "https://github.com/odessa2/IoTize",
   "email": "odessa2@web.de",
   "license": "ISC",
   "dependencies": {
@@ -16,9 +18,9 @@
     "express": "^4.15.3",
     "opn": "^5.1.0",
     "package.json": "^2.0.1",
-    "serialport": "^5.0.0-beta7"
+    "serialport": "^6.0.4"
   },
-   "pkg": {
+  "pkg": {
     "scripts": "iotmodules/*.json"
   }
 }
