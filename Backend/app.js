@@ -405,7 +405,7 @@ function generateSourcCode() {
 
 
 function installExternalLibs(doit) {
-    var base = "arduino --install-library \"NAME\" && ";
+    var base = arduino_bin + " --install-library \"NAME\" && ";
     var ges = "";
 
     for (var item of components) {
