@@ -6,30 +6,28 @@ var os = require('os');
 var path = require('path');
 var fs = require('fs');
 
-
 var opn = require('opn');
 
 var SerialPort = require('serialport');
 var exec = require('child_process').exec;
 var execSync = require('child_process').execSync;
 
+var basepath = process.argv[1].replace("app.js","");
 
-var rules = require('./rules.json');
+var rules = require(basepath + '/rules.json');
 
-// static, in future versions modular and replacable
 var operatingsystem = os.platform();
-
 var arduino_bin;
 
-if (operatingsystem == "darwin") 
+if (operatingsystem == "darwin")
     arduino_bin = "/Applications/Arduino.app/Contents/MacOS/Arduino";
 else if (operatingsystem == "linux")
     arduino_bin = "arduino";
 
 var buildcmd = arduino_bin + ' --board esp8266:esp8266:d1_mini --port $PORT --upload tmp_build_dir/sketch.ino --verbose --pref build.flash_ld=eagle.flash.4m.ld';
 
-var modulespath = path.join(process.cwd() , "/iotmodules/");
 
+var modulespath =  path.join(basepath,"iotmodules/");
 
 var components = new Array();
 var hwsel = new Array();
@@ -50,9 +48,8 @@ process.argv.forEach(function(val, index, array) {
     console.log(index + ': ' + val);
     if (val.includes("install-librarys")){
         installonly = true;
-       
+
     }
-    //  
 });
 
 
@@ -66,9 +63,6 @@ fs.readdir(modulespath, (err, files) => {
     });
     installExternalLibs(installonly);
 })
-
-
-
 
 
 // helper functions
@@ -167,7 +161,7 @@ function generateConfigurationOptions(listofmodules) {
                 for (var params = 0; params < listofmodules[i].parameter.dynamicParameter.parameterList.length; params++) {
                     //check if if ('key' in myObj)
                     // type: text, generated, value
-                    // 
+                    //
 
 
                     if (listofmodules[i].parameter.dynamicParameter.parameterList[params].type == "value") {
@@ -180,7 +174,7 @@ function generateConfigurationOptions(listofmodules) {
                                 "type": "input"
                             })
                         } else {
-                            // for (var dynparams = 0; dynparams < values.length; dynparams++) { 
+                            // for (var dynparams = 0; dynparams < values.length; dynparams++) {
                             console.log(listofmodules[i].parameter.dynamicParameter.parameterList[params].name);
                             dynParameter.push({
                                 "name": listofmodules[i].parameter.dynamicParameter.parameterList[params].name,
@@ -261,7 +255,7 @@ function generateSourcCode() {
 
     var sourceString = "";
 
-    // generate includes part by iterating through modules 
+    // generate includes part by iterating through modules
     Object.keys(sortedModules).forEach(function(key) {
 
         var val = sortedModules[key];
@@ -274,7 +268,7 @@ function generateSourcCode() {
     });
     sourceString += "\n";
 
-    // generate declaraions part by iterating through modules 
+    // generate declaraions part by iterating through modules
     Object.keys(sortedModules).forEach(function(key) {
 
         var val = sortedModules[key];
@@ -308,7 +302,7 @@ function generateSourcCode() {
     });
     sourceString += "\n";
 
-    // generate functions part by iterating through modules 
+    // generate functions part by iterating through modules
     Object.keys(sortedModules).forEach(function(key) {
 
         var val = sortedModules[key];
@@ -331,7 +325,7 @@ function generateSourcCode() {
     });
     sourceString += "\n";
 
-    // generate setup part by iterating through modules 
+    // generate setup part by iterating through modules
 
     sourceString += "void setup(){\n";
     Object.keys(sortedModules).forEach(function(key) {
@@ -357,7 +351,7 @@ function generateSourcCode() {
     });
     sourceString += "\n}\n";
 
-    // generate loop part by iterating through modules 
+    // generate loop part by iterating through modules
     sourceString += "void loop(){\n";
     Object.keys(sortedModules).forEach(function(key) {
 
@@ -431,13 +425,13 @@ function installExternalLibs(doit) {
     }).on('exit', (code) => {
         process.exit(0);
     });
-   
+
 
     }
     // ToDo: make configurable and only install when chosen.
     /*  if (installdependencys){
-   
-   
+
+
 } */
 
     console.log(externallibs);
@@ -448,7 +442,7 @@ function installExternalLibs(doit) {
 var app = express();
 
 // Static HTML/CSS/JS Files
-app.use(express.static(path.join(process.cwd(),'../Frontend')));
+app.use(express.static(path.join(basepath,'../Frontend')));
 
 // Plugin for parsing POST Data
 app.use(bodyParser.json());
@@ -474,9 +468,9 @@ opn('http://127.0.0.1:3000');
 // API Functions
 
 
-// Serve UI when GET / 
+// Serve UI when GET /
 app.get('/', function(req, res) {
-    res.sendFile(path.join(process.cwd(),'../Frontend/ui.html'));
+    res.sendFile(path.join(basepath,'../Frontend/ui.html'));
 });
 
 
